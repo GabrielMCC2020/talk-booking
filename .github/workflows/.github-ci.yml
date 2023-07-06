@@ -22,3 +22,9 @@ build-python-ci-image:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker build -t registry.github.com/GabrielMCC2020/talk-booking:cicd-python3.9-slim .
     - docker push registry.github.com/GabrielMCC2020/talk-booking:cicd-python3.9-slim
+
+- name: Upload coverage reports to Codecov
+  uses: codecov/codecov-action@v3
+   env: CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+   
