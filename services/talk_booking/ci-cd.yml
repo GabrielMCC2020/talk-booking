@@ -1,3 +1,20 @@
+build-python-ci-image:
+  image: docker:19.03.0
+  services:
+    - docker:19.03.0-dind
+  stage: docker
+  before_script:
+    - cd ci_cd/python/
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker build -t registry.gitlab.com/testdriven/talk-booking:cicd-python3.9-slim .
+    - docker push registry.gitlab.com/testdriven/talk-booking:cicd-python3.9-slim
+  only:
+    changes:
+      - ci_cd/python/Dockerfile
+    refs:
+      - main
+
 service-talk-booking-code-quality:
   stage: test
   image: registry.gitlab.com/gabrielmcc2002cultural/talk-booking:cicd-python3.9-slim
@@ -10,6 +27,12 @@ service-talk-booking-code-quality:
     - poetry run isort . --check-only --profile black
     - poetry run bandit .
     - poetry run safety check
+  only:
+    refs:
+      - merge_requests
+      - main
+    changes:
+      - services/talk_booking/**/*
 
 service-talk-booking-tests:
   stage: test
@@ -25,5 +48,12 @@ service-talk-booking-tests:
     when: always
     reports:
       junit: services/talk_booking/report.xml
+  only:
+    refs:
+      - merge_requests
+      - master
+    changes:
+      - services/talk_booking/**/*
 
       
+
