@@ -36,7 +36,7 @@ service-talk-booking-code-quality:
 
 service-talk-booking-tests:
   stage: test
-  image: registry.gitlab.com/<your-gitlab-username>/talk-booking:cicd-python3.9-slim
+  image: registry.gitlab.com/gabrielmcc2002cultural/talk-booking:cicd-python3.9-slim
   before_script:
     - cd services/talk_booking/
     - poetry install
@@ -55,4 +55,27 @@ service-talk-booking-tests:
     changes:
       - services/talk_booking/**/*
 
-      
+.service-talk-booking-docker-image:
+  image: registry.gitlab.com/gabrielmcc2002cultural/talk-booking:cicd-docker
+  stage: docker
+  services:
+    - docker:19.03.0-dind
+  before_script:
+    - cd services/talk_booking/
+    - poetry export --without-hashes --with-credentials -f requirements.txt > requirements.txt
+    - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin AKIA3K72MFBINGM6TFM6.dkr.ecr.us-east-1.amazonaws.com
+  script:
+    - docker build --pull -t "$DOCKER_IMAGE_TAG" .
+    - docker push "$DOCKER_IMAGE_TAG"
+
+service-talk-booking-docker-image-development:
+  extends: .service-talk-booking-docker-image
+  variables:
+    DOCKER_IMAGE_TAG: https://us-east-2.console.aws.amazon.com/ecr/repositories/public/779524778064/talk-booking?region=us-east-2:development-$CI_COMMIT_SHA
+  only:
+    refs:
+      - merge_requests
+      - main
+  changes:
+      - services/talk_booking/**/*      
+
