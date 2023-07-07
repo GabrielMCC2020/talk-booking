@@ -2,6 +2,7 @@ cache:
   key: talk-booking-service-environment
   paths:
     - ${CI_PROJECT_DIR}/infrastructure/talk-booking-service/development/.terraform
+    - ${CI_PROJECT_DIR}/infrastructure/talk-booking-service/production/.terraform # new
 
 .talk-booking-service-validate:
   image: registry.gitlab.com/gitlab-org/terraform-images/releases/0.14:v0.10.0
@@ -26,6 +27,13 @@ talk-booking-service-validate-development:
     changes:
       - infrastructure/talk-booking-service/development/**/*
       - infrastructure/modules/talk-booking-service/**/*
+
+# new
+talk-booking-service-validate-production:
+  extends: .talk-booking-service-validate
+  variables:
+    TF_ROOT: ${CI_PROJECT_DIR}/infrastructure/talk-booking-service/production
+    TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/talk-booking-service-production
 
 .talk-booking-service-plan:
   image: registry.gitlab.com/gitlab-org/terraform-images/releases/0.14:v0.10.0
@@ -57,6 +65,13 @@ talk-booking-service-plan-development:
     - infrastructure/talk-booking-service/development/**/*
     - infrastructure/modules/talk-booking-service/**/*
 
+# new
+talk-booking-service-plan-production:
+  extends: .talk-booking-service-plan
+  variables:
+    TF_ROOT: ${CI_PROJECT_DIR}/infrastructure/talk-booking-service/production
+    TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/talk-booking-service-production
+
 .talk-booking-service-apply:
   image: registry.gitlab.com/gitlab-org/terraform-images/releases/0.14:v0.10.0
   stage: apply
@@ -82,3 +97,15 @@ talk-booking-service-apply-development:
       - infrastructure/talk-booking-service/development/**/*
       - infrastructure/modules/talk-booking-service/**/*
 
+# new
+talk-booking-service-apply-production:
+  extends: .talk-booking-service-apply
+  environment:
+    name: production
+  variables:
+    TF_ROOT: ${CI_PROJECT_DIR}/infrastructure/talk-booking-service/production
+    TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/talk-booking-service-production
+  dependencies:
+    - talk-booking-service-plan-production
+
+    
