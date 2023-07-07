@@ -34,5 +34,7 @@ module "talk-booking-service" {
     app_count = 1
     environment_name = "talk-booking-dev"
     app_environment = "development"
+    domain_zone_id = data.terraform_remote_state.vpc.outputs.domain_zone_id
+    domain = "development.talkbooking.com"
 }
 
