@@ -136,3 +136,16 @@ service-talk-booking-e2e:
   script:
     - poetry run python -m pytest tests/e2e
 
+service-talk-booking-docker-image-production:
+  extends: .service-talk-booking-docker-image
+  variables:
+    DOCKER_IMAGE_TAG: 779524778064.dkr.ecr.us-east-1.amazonaws.com/talk-booking-prod:production-$CI_COMMIT_TAG
+
+service-talk-booking-production:
+  extends: .service-talk-booking-deploy
+  variables:
+    ENVIRONMENT_NAME: talk-booking-prod
+    APP_ENVIRONMENT_NAME: production
+    DOCKER_IMAGE_TAG: 779524778064.dkr.ecr.us-east-1.amazonaws.com/talk-booking-prod:production-$CI_COMMIT_TAG
+
+    
