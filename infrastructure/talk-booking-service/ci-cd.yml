@@ -1,8 +1,7 @@
 cache:
   key: talk-booking-service-environment
   paths:
-    - ${CI_PROJECT_DIR}/infrastructure/talk-booking-service
-/development/.terraform
+    - ${CI_PROJECT_DIR}/infrastructure/talk-booking-service/development/.terraform
 
 .talk-booking-service-validate:
   image: registry.gitlab.com/gitlab-org/terraform-images/releases/0.14:v0.10.0
@@ -20,6 +19,13 @@ talk-booking-service-validate-development:
   variables:
   TF_ROOT: ${CI_PROJECT_DIR}/infrastructure/talk-booking-service/development
   TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/talk-booking-service-development
+  only:
+    refs:
+      - merge_requests
+      - main
+    changes:
+      - infrastructure/talk-booking-service/development/**/*
+      - infrastructure/modules/talk-booking-service/**/*
 
 .talk-booking-service-plan:
   image: registry.gitlab.com/gitlab-org/terraform-images/releases/0.14:v0.10.0
@@ -43,6 +49,13 @@ talk-booking-service-plan-development:
   variables:
   TF_ROOT: ${CI_PROJECT_DIR}/infrastructure/talk-booking-service/development
   TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/talk-booking-service-development
+  only:
+    refs:
+    - merge_requests
+    - main
+  changes:
+    - infrastructure/talk-booking-service/development/**/*
+    - infrastructure/modules/talk-booking-service/**/*
 
 .talk-booking-service-apply:
   image: registry.gitlab.com/gitlab-org/terraform-images/releases/0.14:v0.10.0
@@ -62,4 +75,10 @@ talk-booking-service-apply-development:
   TF_ADDRESS: ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/terraform/state/talk-booking-service-development
   dependencies:
     - talk-booking-service-plan-development
+  only:
+    refs:
+      - main
+    changes:
+      - infrastructure/talk-booking-service/development/**/*
+      - infrastructure/modules/talk-booking-service/**/*
 
