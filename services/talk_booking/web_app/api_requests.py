@@ -11,3 +11,11 @@ class SubmitTalkRequest(BaseModel):
     requester: EmailStr
     
     
+class AcceptTalkRequest(BaseModel):
+    id: str
+    
+class RejectTalkRequest(BaseModel):
+    id: str
+    
+        
+    
