@@ -103,3 +103,28 @@ service-talk-booking-development:
     changes:
     - services/talk_booking/**/*
 
+service-talk-booking-docker-image-development:
+  extends: .service-talk-booking-docker-image
+  variables:
+    DOCKER_IMAGE_TAG: https://us-east-2.console.aws.amazon.com/ecr/repositories/public/779524778064/talk-booking?region=us-east-2:development-$CI_COMMIT_SHA
+  only:
+    refs:
+    - merge_requests
+    - main
+    changes:
+    - services/talk_booking/**/*
+
+service-talk-booking-development:
+  extends: .service-talk-booking-deploy
+  variables:
+    ENVIRONMENT_NAME: talk-booking-dev
+    APP_ENVIRONMENT_NAME: development
+  DOCKER_IMAGE_TAG: https://us-east-2.console.aws.amazon.com/ecr/repositories/public/779524778064/talk-booking?region=us-east-2:development-$CI_COMMIT_SHA
+  only:
+    refs:
+    - merge_requests
+    - main
+  changes:
+    - services/talk_booking/**/*
+
+    
